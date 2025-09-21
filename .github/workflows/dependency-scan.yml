@@ -1,77 +1,80 @@
-name: Dependency scan and map parents
+name: Dependency Scan
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 jobs:
   audit:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: npm-audit
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: 18
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install
 
-      - name: Run npm audit (JSON)
+      - name: Run npm audit
+        run: npm audit --json > audit-report.json
+
+      - name: Convert audit report to CSV (with parent libs)
         run: |
-          set -e
-          # produce npm-audit.json. npm audit may exit non-zero; capture output but still create file.
-          npm audit --json > npm-audit.json || true
-          # show a small preview
-          echo "---- audit preview ----"
-          head -n 200 npm-audit.json || true
+          node -e "
+          const fs = require('fs');
+          const { execSync } = require('child_process');
+          const data = JSON.parse(fs.readFileSync('audit-report.json'));
+          const rows = [];
 
-      - name: Upload audit artifact
-        uses: actions/upload-artifact@v4
+          function findParent(lib) {
+            try {
+              const output = execSync(\`npm ls \${lib} --all --json\`).toString();
+              const tree = JSON.parse(output);
+              // Helper: recursively search the dependency tree
+              function search(node, target, parent=null) {
+                if (!node.dependencies) return null;
+                for (const [dep, info] of Object.entries(node.dependencies)) {
+                  if (dep === target) return parent || 'root';
+                  const found = search(info, target, dep);
+                  if (found) return found;
+                }
+                return null;
+              }
+              return search(tree, lib) || 'unknown';
+            } catch (e) {
+              return 'unknown';
+            }
+          }
+
+          if (data.vulnerabilities) {
+            for (const [name, vuln] of Object.entries(data.vulnerabilities)) {
+              const parent = findParent(name);
+              rows.push([
+                name,
+                parent,
+                vuln.severity,
+                vuln.via.map(v => typeof v === 'string' ? v : v.title).join('; '),
+                vuln.range,
+                vuln.fixAvailable ? JSON.stringify(vuln.fixAvailable) : 'No fix'
+              ].join(','));
+            }
+          }
+
+          fs.writeFileSync(
+            'vulnerable-report.csv',
+            'package,parent,severity,issues,range,fix\n' + rows.join('\n')
+          );
+          "
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v3
         with:
-          name: npm-audit
-          path: npm-audit.json
-
-  map-parents:
-    needs: audit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
-      - name: Download audit artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: npm-audit
-          path: .
-
-      - name: Install dependencies (for npm ls to build tree)
-        run: npm ci || npm install
-
-      - name: Add script file
-        # No-op if script already in repo; ensure it exists
-        run: |
-          mkdir -p scripts
-          cat > scripts/find-vulnerable-parents.js <<'JS'
-          // (You can paste the full script here if it's not in the repo already)
-          JS
-        shell: bash
-
-      - name: Run mapping script
-        run: node scripts/find-vulnerable-parents.js
-
-      - name: Upload CSV report
-        uses: actions/upload-artifact@v4
-        with:
-          name: vulnerable-report
+          name: dependency-audit
           path: vulnerable-report.csv
