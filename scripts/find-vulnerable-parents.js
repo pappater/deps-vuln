@@ -2,6 +2,7 @@
 const fs = require("fs");
 const { execSync } = require("child_process");
 const path = require("path");
+const https = require("https");
 
 function readAuditJson(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -111,7 +112,42 @@ function findParentChains(tree, vulnerableSet, vulnDetailsMap) {
   return results;
 }
 
-function saveCsv(results, outFile) {
+async function fetchNpmPackageInfo(pkg) {
+  return new Promise((resolve) => {
+    https
+      .get(`https://registry.npmjs.org/${pkg}`, (res) => {
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            resolve(null);
+          }
+        });
+      })
+      .on("error", () => resolve(null));
+  });
+}
+
+function getLatestInSeries(versions, currentVersion) {
+  const semver = require("semver");
+  const major = semver.major(currentVersion);
+  const filtered = Object.keys(versions)
+    .filter((v) => semver.valid(v) && semver.major(v) === major)
+    .sort(semver.rcompare);
+  return filtered[0] || "";
+}
+
+function getLatestOverall(versions) {
+  const semver = require("semver");
+  const filtered = Object.keys(versions)
+    .filter((v) => semver.valid(v))
+    .sort(semver.rcompare);
+  return filtered[0] || "";
+}
+
+async function saveCsv(results, outFile, parentLibs) {
   const header =
     "Vulnerable Package,Version,Parent Chain,Severity,Advisory URL\n";
   const lines = results.map((r) => {
@@ -122,22 +158,30 @@ function saveCsv(results, outFile) {
     const url = (r.url || "").replace(/"/g, '""');
     return `"${pkg}","${ver}","${chain}","${sev}","${url}"`;
   });
-  fs.writeFileSync(outFile, header + lines.join("\n"), "utf8");
+  let csv = header + lines.join("\n");
+
+  if (parentLibs && parentLibs.length > 0) {
+    csv +=
+      "\n\nParent Library,Current Version,Latest in Series,Latest Overall\n";
+    for (const lib of parentLibs) {
+      const { name, version, latestInSeries, latestOverall } = lib;
+      csv += `"${name}","${version}","${latestInSeries}","${latestOverall}"\n`;
+    }
+  }
+  fs.writeFileSync(outFile, csv, "utf8");
   console.log("Saved CSV to", outFile);
 }
 
 async function main() {
   const auditFile = path.resolve(process.cwd(), "npm-audit.json"); // artifact from CI
   const outputCsv = path.resolve(process.cwd(), "vulnerable-report.csv");
-
   const auditJson = readAuditJson(auditFile);
   const vulnerable = extractVulnerablePackages(auditJson);
   if (vulnerable.length === 0) {
     console.log("No vulnerable packages found in audit JSON.");
-    saveCsv([], outputCsv);
+    await saveCsv([], outputCsv, []);
     return;
   }
-
   console.log("Vulnerable packages found:", vulnerable.join(", "));
   const vulnSet = new Set(vulnerable);
   const vulnDetailsMap = buildVulnDetailsMap(auditJson);
@@ -153,7 +197,41 @@ async function main() {
       uniqResults.push(r);
     }
   }
-  saveCsv(uniqResults, outputCsv);
+
+  // Collect all unique parent libraries and their versions
+  const parentLibMap = new Map();
+  for (const r of uniqResults) {
+    // Only consider the first parent in the chain (immediate parent)
+    const chainArr = r.parentChain.split(" -> ");
+    if (chainArr.length > 1) {
+      const parent = chainArr[0];
+      const parentVersion =
+        (tree.dependencies &&
+          tree.dependencies[parent] &&
+          tree.dependencies[parent].version) ||
+        "";
+      if (parent && parentVersion && !parentLibMap.has(parent)) {
+        parentLibMap.set(parent, parentVersion);
+      }
+    }
+  }
+
+  // For each parent library, fetch latest versions
+  const parentLibs = [];
+  for (const [name, version] of parentLibMap.entries()) {
+    const info = await fetchNpmPackageInfo(name);
+    let latestInSeries = "";
+    let latestOverall = "";
+    if (info && info.versions && version) {
+      try {
+        latestInSeries = getLatestInSeries(info.versions, version);
+        latestOverall = getLatestOverall(info.versions);
+      } catch (e) {}
+    }
+    parentLibs.push({ name, version, latestInSeries, latestOverall });
+  }
+
+  await saveCsv(uniqResults, outputCsv, parentLibs);
 }
 
 main();
