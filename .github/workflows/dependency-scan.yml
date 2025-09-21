@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Run npm audit
-        run: npm audit --json > npm-audit.json
+        run: npm audit --json > npm-audit.json || true
 
       - name: Find vulnerable parents and create CSV
         run: node scripts/find-vulnerable-parents.js
