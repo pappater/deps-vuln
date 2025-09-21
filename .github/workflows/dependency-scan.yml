@@ -9,7 +9,6 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,55 +22,10 @@ jobs:
         run: npm install
 
       - name: Run npm audit
-        run: npm audit --json > audit-report.json
+        run: npm audit --json > npm-audit.json
 
-      - name: Convert audit report to CSV (with parent libs)
-        run: |
-          node -e "
-          const fs = require('fs');
-          const { execSync } = require('child_process');
-          const data = JSON.parse(fs.readFileSync('audit-report.json'));
-          const rows = [];
-
-          function findParent(lib) {
-            try {
-              const output = execSync(\`npm ls \${lib} --all --json\`).toString();
-              const tree = JSON.parse(output);
-              // Helper: recursively search the dependency tree
-              function search(node, target, parent=null) {
-                if (!node.dependencies) return null;
-                for (const [dep, info] of Object.entries(node.dependencies)) {
-                  if (dep === target) return parent || 'root';
-                  const found = search(info, target, dep);
-                  if (found) return found;
-                }
-                return null;
-              }
-              return search(tree, lib) || 'unknown';
-            } catch (e) {
-              return 'unknown';
-            }
-          }
-
-          if (data.vulnerabilities) {
-            for (const [name, vuln] of Object.entries(data.vulnerabilities)) {
-              const parent = findParent(name);
-              rows.push([
-                name,
-                parent,
-                vuln.severity,
-                vuln.via.map(v => typeof v === 'string' ? v : v.title).join('; '),
-                vuln.range,
-                vuln.fixAvailable ? JSON.stringify(vuln.fixAvailable) : 'No fix'
-              ].join(','));
-            }
-          }
-
-          fs.writeFileSync(
-            'vulnerable-report.csv',
-            'package,parent,severity,issues,range,fix\n' + rows.join('\n')
-          );
-          "
+      - name: Find vulnerable parents and create CSV
+        run: node scripts/find-vulnerable-parents.js
 
       - name: Upload audit report
         uses: actions/upload-artifact@v4
