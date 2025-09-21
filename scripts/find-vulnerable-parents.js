@@ -52,7 +52,6 @@ function buildDependencyTreeJson() {
   return JSON.parse(treeJson);
 }
 
-
 function buildVulnDetailsMap(auditJson) {
   const map = {};
   // npm v6 style
@@ -67,11 +66,14 @@ function buildVulnDetailsMap(auditJson) {
     });
   }
   // npm v7+ style
-  if (auditJson.vulnerabilities && typeof auditJson.vulnerabilities === "object") {
+  if (
+    auditJson.vulnerabilities &&
+    typeof auditJson.vulnerabilities === "object"
+  ) {
     Object.entries(auditJson.vulnerabilities).forEach(([pkg, v]) => {
       let url = "";
       if (v.via && Array.isArray(v.via) && v.via.length > 0) {
-        const first = v.via.find(x => typeof x === 'object' && x.url);
+        const first = v.via.find((x) => typeof x === "object" && x.url);
         if (first) url = first.url;
       }
       map[pkg] = {
@@ -90,14 +92,16 @@ function findParentChains(tree, vulnerableSet, vulnDetailsMap) {
     if (!node || !node.dependencies) return;
     for (const [depName, depInfo] of Object.entries(node.dependencies)) {
       const newPath = [...path, depName];
+      // Remove the root project name from the parent chain
+      const parentChain = newPath.slice(1).join(" -> ");
       if (vulnerableSet.has(depName)) {
         const details = vulnDetailsMap[depName] || {};
         results.push({
           package: depName,
           version: depInfo.version || "",
-          parentChain: newPath.join(" -> "),
+          parentChain: parentChain,
           severity: details.severity || "",
-          url: details.url || ""
+          url: details.url || "",
         });
       }
       recurse(depInfo, newPath);
@@ -107,9 +111,9 @@ function findParentChains(tree, vulnerableSet, vulnDetailsMap) {
   return results;
 }
 
-
 function saveCsv(results, outFile) {
-  const header = "Vulnerable Package,Version,Parent Chain,Severity,Advisory URL\n";
+  const header =
+    "Vulnerable Package,Version,Parent Chain,Severity,Advisory URL\n";
   const lines = results.map((r) => {
     const pkg = r.package.replace(/"/g, '""');
     const ver = (r.version || "").replace(/"/g, '""');
@@ -125,7 +129,6 @@ function saveCsv(results, outFile) {
 async function main() {
   const auditFile = path.resolve(process.cwd(), "npm-audit.json"); // artifact from CI
   const outputCsv = path.resolve(process.cwd(), "vulnerable-report.csv");
-
 
   const auditJson = readAuditJson(auditFile);
   const vulnerable = extractVulnerablePackages(auditJson);
