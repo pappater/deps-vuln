@@ -140,11 +140,11 @@ async function main() {
   const vulnDetailsMap = buildVulnDetailsMap(auditJson);
   const tree = buildDependencyTreeJson();
   const results = findParentChains(tree, vulnSet, vulnDetailsMap);
-  // Remove duplicates (same package might be found multiple times)
+  // Remove duplicates: only one row per unique package@version
   const uniqKey = new Set();
   const uniqResults = [];
   for (const r of results) {
-    const key = `${r.package}@${r.version}|${r.parentChain}`;
+    const key = `${r.package}@${r.version}`;
     if (!uniqKey.has(key)) {
       uniqKey.add(key);
       uniqResults.push(r);
