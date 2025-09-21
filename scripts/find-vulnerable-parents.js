@@ -85,24 +85,25 @@ function buildVulnDetailsMap(auditJson) {
 
 function findParentChains(tree, vulnerableSet, vulnDetailsMap) {
   const results = [];
-  // Helper to recursively find all vulnerable packages and their direct parent
-  function recurse(node, parentName) {
+  // Helper to recursively find all vulnerable packages and their full ancestry
+  function recurse(node, path) {
     if (!node || !node.dependencies) return;
     for (const [depName, depInfo] of Object.entries(node.dependencies)) {
+      const newPath = [...path, depName];
       if (vulnerableSet.has(depName)) {
         const details = vulnDetailsMap[depName] || {};
         results.push({
           package: depName,
           version: depInfo.version || "",
-          parentChain: parentName || "root",
+          parentChain: newPath.join(" -> "),
           severity: details.severity || "",
           url: details.url || ""
         });
       }
-      recurse(depInfo, node.name || "root");
+      recurse(depInfo, newPath);
     }
   }
-  recurse(tree, tree.name || "root");
+  recurse(tree, [tree.name || "root"]);
   return results;
 }
 
