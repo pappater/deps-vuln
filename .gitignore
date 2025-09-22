@@ -1,0 +1,21 @@
+# Node
+node_modules/
+
+# Dependency audit and lock files
+npm-audit.json
+package-lock.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# VSCode
+.vscode/
+
+# Output
+vulnerable-report.csv
+
+# OS
+.DS_Store
+Thumbs.db
