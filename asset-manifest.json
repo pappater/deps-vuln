@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/audit-report/static/css/main.2ab456d2.chunk.css",
-    "main.js": "/audit-report/static/js/main.55d7468e.chunk.js",
-    "main.js.map": "/audit-report/static/js/main.55d7468e.chunk.js.map",
-    "runtime-main.js": "/audit-report/static/js/runtime-main.7083819b.js",
-    "runtime-main.js.map": "/audit-report/static/js/runtime-main.7083819b.js.map",
-    "static/js/2.56169d87.chunk.js": "/audit-report/static/js/2.56169d87.chunk.js",
-    "static/js/2.56169d87.chunk.js.map": "/audit-report/static/js/2.56169d87.chunk.js.map",
-    "index.html": "/audit-report/index.html",
-    "static/css/main.2ab456d2.chunk.css.map": "/audit-report/static/css/main.2ab456d2.chunk.css.map",
-    "static/js/2.56169d87.chunk.js.LICENSE.txt": "/audit-report/static/js/2.56169d87.chunk.js.LICENSE.txt"
+    "main.css": "/deps-vuln/static/css/main.2ab456d2.chunk.css",
+    "main.js": "/deps-vuln/static/js/main.55d7468e.chunk.js",
+    "main.js.map": "/deps-vuln/static/js/main.55d7468e.chunk.js.map",
+    "runtime-main.js": "/deps-vuln/static/js/runtime-main.c70a73d1.js",
+    "runtime-main.js.map": "/deps-vuln/static/js/runtime-main.c70a73d1.js.map",
+    "static/js/2.56169d87.chunk.js": "/deps-vuln/static/js/2.56169d87.chunk.js",
+    "static/js/2.56169d87.chunk.js.map": "/deps-vuln/static/js/2.56169d87.chunk.js.map",
+    "index.html": "/deps-vuln/index.html",
+    "static/css/main.2ab456d2.chunk.css.map": "/deps-vuln/static/css/main.2ab456d2.chunk.css.map",
+    "static/js/2.56169d87.chunk.js.LICENSE.txt": "/deps-vuln/static/js/2.56169d87.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.7083819b.js",
+    "static/js/runtime-main.c70a73d1.js",
     "static/js/2.56169d87.chunk.js",
     "static/css/main.2ab456d2.chunk.css",
     "static/js/main.55d7468e.chunk.js"
