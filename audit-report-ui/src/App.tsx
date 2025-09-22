@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DragAndDrop from './components/DragAndDrop';
 import TableDisplay from './components/TableDisplay';
 import ExportButton from './components/ExportButton';
@@ -16,6 +16,20 @@ const App: React.FC = () => {
     const toggleTheme = () => {
         setIsDarkTheme(!isDarkTheme);
     };
+
+    // Prevent default browser drag/drop for the whole window
+    useEffect(() => {
+        const prevent = (e: DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+        window.addEventListener('dragover', prevent);
+        window.addEventListener('drop', prevent);
+        return () => {
+            window.removeEventListener('dragover', prevent);
+            window.removeEventListener('drop', prevent);
+        };
+    }, []);
 
     return (
         <div className={isDarkTheme ? 'black-theme' : 'white-theme'}>
