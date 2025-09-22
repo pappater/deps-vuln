@@ -13,7 +13,7 @@ const TableDisplay: React.FC<TableDisplayProps> = ({ data }) => {
 
     return (
         <div>
-            <table>
+            <table className="table">
                 <thead>
                     <tr>
                         {headers.map((header) => (

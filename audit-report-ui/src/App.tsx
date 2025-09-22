@@ -18,11 +18,13 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className={isDarkTheme ? 'dark-theme' : 'light-theme'}>
-            <ThemeToggle toggleTheme={toggleTheme} />
-            <DragAndDrop onFileDrop={handleDataChange} />
-            <TableDisplay data={data} />
-            <ExportButton data={data} />
+        <div className={isDarkTheme ? 'black-theme' : 'white-theme'}>
+            <div className="container">
+                <ThemeToggle toggleTheme={toggleTheme} />
+                <DragAndDrop onFileDrop={handleDataChange} />
+                <TableDisplay data={data} />
+                <ExportButton data={data} />
+            </div>
         </div>
     );
 };

@@ -1,3 +1,4 @@
+
 name: Dependency Scan
 
 on:
@@ -24,6 +25,9 @@ jobs:
       - name: Run npm audit
         run: npm audit --json > npm-audit.json || true
 
+      - name: Generate npm-ls.json (dependency tree)
+        run: npm ls --all --json > npm-ls.json || true
+
 
       - name: Find vulnerable parents and create CSV
         run: node scripts/find-vulnerable-parents.js
@@ -38,3 +42,4 @@ jobs:
           path: |
             ./vulnerable-report.csv
             ./npm-audit.json
+            ./npm-ls.json

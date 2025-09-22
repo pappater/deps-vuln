@@ -6,7 +6,14 @@ interface ExportButtonProps {
 
 const ExportButton: React.FC<ExportButtonProps> = ({ data }) => {
     const handleExport = () => {
-        const csvContent = data.map(row => Object.values(row).join(",")).join("\n");
+        if (!data || data.length === 0) return;
+        const headers = Object.keys(data[0]);
+        const escape = (val: string) => '"' + String(val).replace(/"/g, '""') + '"';
+        const csvRows = [headers.map(escape).join(",")];
+        data.forEach(row => {
+            csvRows.push(headers.map(h => escape(row[h] ?? "")).join(","));
+        });
+        const csvContent = csvRows.join("\n");
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -19,7 +26,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data }) => {
     };
 
     return (
-        <button onClick={handleExport}>
+        <button className="button" onClick={handleExport}>
             Export as CSV
         </button>
     );
