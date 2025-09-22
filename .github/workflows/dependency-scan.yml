@@ -31,4 +31,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dependency-audit
-          path: vulnerable-report.csv
+          path: |
+            vulnerable-report.csv
+            npm-audit.json
