@@ -36,5 +36,5 @@ jobs:
         with:
           name: dependency-audit
           path: |
-            vulnerable-report.csv
-            npm-audit.json
+            ./vulnerable-report.csv
+            ./npm-audit.json
