@@ -211,15 +211,26 @@ const DragAndDrop: React.FC<{ onFileDrop: (data: any) => void }> = ({ onFileDrop
                 onClick={e => e.preventDefault()} // Prevent accidental file open
                 tabIndex={0} // Make div focusable for accessibility
                 style={{
-                    border: dragging ? '2px dashed #000' : '2px solid #ccc',
-                    padding: '20px',
+                    border: dragging ? '2px dashed #111' : '2px solid #bbb',
+                    background: dragging ? '#eee' : '#fff',
+                    color: '#111',
+                    borderRadius: 16,
+                    padding: '24px',
                     textAlign: 'center',
-                    transition: 'border 0.3s',
+                    fontSize: 18,
+                    fontWeight: 600,
+                    outline: 'none',
+                    transition: 'border 0.2s, background 0.2s',
+                    marginBottom: 8,
+                    width: 420,
+                    maxWidth: '100%',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
                 }}
             >
                 {dragging ? 'Release to drop the files' : 'Drag and drop your npm-audit.json and npm-ls.json files here'}
             </div>
-            {status && <div style={{ color: 'red', marginTop: 10 }}>{status}</div>}
+            {status && <div style={{ color: '#c00', marginTop: 10 }}>{status}</div>}
         </div>
     );
 };

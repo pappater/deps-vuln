@@ -1,17 +1,18 @@
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Inter', system-ui, Arial, sans-serif;
+    background: #fff;
+    color: #111;
 }
 
 .white-theme {
-    background-color: #ffffff;
-    color: #000000;
+    background: #fff;
+    color: #111;
 }
-
 .black-theme {
-    background-color: #000000;
-    color: #ffffff;
+    background: #000;
+    color: #fff;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -19,7 +20,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .container {
-    padding: 20px;
+    padding: 32px 16px 48px 16px;
 }
 
 .table {
@@ -39,15 +40,40 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+    padding: 12px 28px;
+    background: #111;
+    color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 0;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    box-shadow: none;
+    transition: background 0.2s, color 0.2s;
+}
+.button:hover {
+    background: #fff;
+    color: #111;
+    border: 1.5px solid #111;
 }
 
-.button:hover {
-    background-color: #0056b3;
+.card, .accordion-card {
+    background: #fff;
+    border-radius: 0;
+    box-shadow: none;
+    border: 1.5px solid #111;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, Arial, sans-serif;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: #111;
+}
+
+.accordion-section {
+    margin-bottom: 24px;
 }
