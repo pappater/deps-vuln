@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fetchLatestVersion } from '../utils/npmApi';
+
 
 const DragAndDrop: React.FC<{ onFileDrop: (data: any) => void }> = ({ onFileDrop }) => {
     const [dragging, setDragging] = useState(false);
@@ -198,10 +198,6 @@ const DragAndDrop: React.FC<{ onFileDrop: (data: any) => void }> = ({ onFileDrop
                 uniqResults.push(r);
             }
         }
-        // Fetch latest version for each vulnerable package
-        for (const row of uniqResults) {
-            row.latestVersion = await fetchLatestVersion(row.package);
-        }
         return uniqResults;
     }
 
@@ -212,6 +208,8 @@ const DragAndDrop: React.FC<{ onFileDrop: (data: any) => void }> = ({ onFileDrop
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
+                onClick={e => e.preventDefault()} // Prevent accidental file open
+                tabIndex={0} // Make div focusable for accessibility
                 style={{
                     border: dragging ? '2px dashed #000' : '2px solid #ccc',
                     padding: '20px',

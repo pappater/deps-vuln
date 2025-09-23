@@ -7,7 +7,6 @@ interface TableDisplayProps {
 const columnOrder = [
     'package',
     'version',
-    'latestVersion',
     'parentChain',
     'severity',
     'url',
@@ -16,7 +15,6 @@ const columnOrder = [
 const columnLabels: Record<string, string> = {
     package: 'Vulnerable Package',
     version: 'Current Version',
-    latestVersion: 'Latest Version',
     parentChain: 'Parent Chain',
     severity: 'Severity',
     url: 'Advisory URL',
