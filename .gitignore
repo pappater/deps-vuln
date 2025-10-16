@@ -19,3 +19,6 @@ vulnerable-report.csv
 # OS
 .DS_Store
 Thumbs.db
+
+# Build output
+audit-report-ui/build/

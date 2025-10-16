@@ -77,3 +77,24 @@ h1, h2, h3, h4, h5, h6 {
 .accordion-section {
     margin-bottom: 24px;
 }
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 24px 12px 36px 12px;
+    }
+    
+    h1 {
+        font-size: 32px !important;
+    }
+    
+    .button {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+    
+    .table th, .table td {
+        padding: 6px;
+        font-size: 14px;
+    }
+}
