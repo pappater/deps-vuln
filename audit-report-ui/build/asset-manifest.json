@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/deps-vuln/static/css/main.2ab456d2.chunk.css",
-    "main.js": "/deps-vuln/static/js/main.55d7468e.chunk.js",
-    "main.js.map": "/deps-vuln/static/js/main.55d7468e.chunk.js.map",
+    "main.css": "/deps-vuln/static/css/main.4e0f83e3.chunk.css",
+    "main.js": "/deps-vuln/static/js/main.8efc2a4a.chunk.js",
+    "main.js.map": "/deps-vuln/static/js/main.8efc2a4a.chunk.js.map",
     "runtime-main.js": "/deps-vuln/static/js/runtime-main.c70a73d1.js",
     "runtime-main.js.map": "/deps-vuln/static/js/runtime-main.c70a73d1.js.map",
     "static/js/2.56169d87.chunk.js": "/deps-vuln/static/js/2.56169d87.chunk.js",
     "static/js/2.56169d87.chunk.js.map": "/deps-vuln/static/js/2.56169d87.chunk.js.map",
     "index.html": "/deps-vuln/index.html",
-    "static/css/main.2ab456d2.chunk.css.map": "/deps-vuln/static/css/main.2ab456d2.chunk.css.map",
+    "static/css/main.4e0f83e3.chunk.css.map": "/deps-vuln/static/css/main.4e0f83e3.chunk.css.map",
     "static/js/2.56169d87.chunk.js.LICENSE.txt": "/deps-vuln/static/js/2.56169d87.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.c70a73d1.js",
     "static/js/2.56169d87.chunk.js",
-    "static/css/main.2ab456d2.chunk.css",
-    "static/js/main.55d7468e.chunk.js"
+    "static/css/main.4e0f83e3.chunk.css",
+    "static/js/main.8efc2a4a.chunk.js"
   ]
 }
